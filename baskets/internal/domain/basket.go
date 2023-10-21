@@ -20,5 +20,30 @@ type Basket struct {
 	CustomerID string
 	PaymentID  string
 	Items      []Item
-	Status     Bas
+	Status     BasketStatus
+}
+
+func StartBasket(id, customerID string) (*Basket, error) {
+	if id == "" {
+		return nil, ErrBasketIDCannotBeBlank
+	}
+
+	if customerID == "" {
+		return nil, ErrBasketIDCannotBeBlank
+	}
+
+	basket := &Basket{
+		AggregateBase: ddd.AggregateBase{
+			ID: id,
+		},
+		CustomerID: customerID,
+		Status:     BasketIsOpen,
+		Items:      []Item{},
+	}
+
+	basket.AddEvent(&BasketStarted{
+		Basket: basket,
+	})
+
+	return basket, nil
 }
