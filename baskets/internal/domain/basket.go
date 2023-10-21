@@ -47,3 +47,60 @@ func StartBasket(id, customerID string) (*Basket, error) {
 
 	return basket, nil
 }
+
+func (b Basket) IsCancellable() bool {
+	return b.Status == BasketIsOpen
+}
+
+func (b Basket) IsOpen() bool {
+	return b.Status == BasketIsOpen
+}
+
+func (b *Basket) Cancel() error {
+	if !b.IsCancellable() {
+		return ErrBasketCannotBeCancelled
+	}
+
+	b.Status = BasketIsCanceled
+	b.Items = []Item{}
+
+	b.AddEvent(&BasketCanceled{
+		Basket: b,
+	})
+
+	return nil
+}
+
+func (b *Basket) Checkout(paymentID string) error {
+	if !b.IsOpen() {
+		return ErrBasketCannotBeModified
+	}
+
+	if len(b.Items) == 0 {
+		return ErrBasketHasNoItems
+	}
+
+	if paymentID == "" {
+		return ErrPaymentIDCannotBeBlank
+	}
+
+	b.PaymentID = paymentID
+	b.Status = BasketIsCheckedOut
+
+	b.AddEvent(&BasketCheckedOut{
+		Basket: b,
+	})
+
+	return nil
+}
+
+func (b *Basket) hasProduct(product *Product) (int, bool) {
+	for i, item := range b.Items {
+		if item.ProductID == product.ID &&
+			item.StoreID == product.StoreID {
+			return i, true
+		}
+	}
+
+	return -1, false
+}
