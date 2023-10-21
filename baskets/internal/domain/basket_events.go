@@ -19,6 +19,7 @@ func (BasketItemAdded) EventName() string {
 
 type BasketItemRemoved struct {
 	Basket *Basket
+	Item   Item
 }
 
 func (BasketItemRemoved) EventName() string {

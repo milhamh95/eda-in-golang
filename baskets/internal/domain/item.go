@@ -6,5 +6,5 @@ type Item struct {
 	StoreName    string
 	ProductName  string
 	ProductPrice float64
-	Quanity      int
+	Quantity     int
 }

@@ -3,6 +3,7 @@ package domain
 import (
 	"eda-in-golang/internal/ddd"
 	"github.com/stackus/errors"
+	"sort"
 )
 
 var (
@@ -103,4 +104,71 @@ func (b *Basket) hasProduct(product *Product) (int, bool) {
 	}
 
 	return -1, false
+}
+
+func (b *Basket) AddItem(store *Store, product *Product, quantity int) error {
+	if !b.IsOpen() {
+		return ErrBasketCannotBeModified
+	}
+
+	if quantity < 0 {
+		return ErrQuantityCannotBeNegative
+	}
+
+	item := Item{
+		StoreID:      store.ID,
+		ProductID:    product.ID,
+		StoreName:    store.Name,
+		ProductName:  product.Name,
+		ProductPrice: product.Price,
+		Quantity:     quantity,
+	}
+
+	i, exists := b.hasProduct(product)
+	if exists {
+		b.Items[i].Quantity += quantity
+	} else {
+		b.Items = append(b.Items, item)
+
+		sort.Slice(b.Items, func(i, j int) bool {
+			return b.Items[i].StoreName <= b.Items[j].StoreName &&
+				b.Items[i].ProductName < b.Items[j].ProductName
+		})
+	}
+
+	b.AddEvent(&BasketItemAdded{
+		Basket: b,
+		Item:   item,
+	})
+
+	return nil
+}
+
+func (b *Basket) RemoveItem(product *Product, quantity int) error {
+	if !b.IsOpen() {
+		return ErrBasketCannotBeModified
+	}
+
+	if quantity < 0 {
+		return ErrQuantityCannotBeNegative
+	}
+
+	i, exists := b.hasProduct(product)
+	if exists {
+		b.Items[i].Quantity -= quantity
+
+		item := b.Items[i]
+		item.Quantity = quantity
+
+		if b.Items[i].Quantity < 1 {
+			b.Items = append(b.Items[:i], b.Items[i+1:]...)
+		}
+
+		b.AddEvent(&BasketItemRemoved{
+			Basket: b,
+			Item:   item,
+		})
+	}
+
+	return nil
 }
