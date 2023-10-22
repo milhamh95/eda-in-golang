@@ -14,6 +14,7 @@ require (
 	github.com/stackus/dotenv v0.0.0-20221206033122-02295762494b // indirect
 	github.com/stackus/errors v0.1.5 // indirect
 	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d // indirect

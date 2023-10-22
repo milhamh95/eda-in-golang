@@ -1,6 +1,8 @@
 package config
 
 import (
+	"eda-in-golang/internal/rpc"
+	"eda-in-golang/internal/web"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/stackus/dotenv"
 	"os"
@@ -16,6 +18,8 @@ type (
 		Environment     string
 		LogLevel        string `envconfig:"LOG_LEVL" default:"DEBUG"`
 		PG              PGConfig
+		Rpc             rpc.RpcConfig
+		Web             web.WebConfig
 		ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" default:"30s"`
 	}
 )
