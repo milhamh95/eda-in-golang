@@ -141,3 +141,37 @@ func (a Application) CheckoutBasket(ctx context.Context, checkout CheckoutBasket
 
 	return nil
 }
+
+func (a Application) AddItem(ctx context.Context, add AddItem) error {
+	basket, err := a.basketRepository.Find(ctx, add.ID)
+	if err != nil {
+		return err
+	}
+
+	product, err := a.productRepository.Find(ctx, add.ProductID)
+	if err != nil {
+		return err
+	}
+
+	store, err := a.storeRepository.Find(ctx, product.StoreID)
+	if err != nil {
+		return err
+	}
+
+	err = basket.AddItem(store, product, add.Quantity)
+	if err != nil {
+		return err
+	}
+
+	err = a.basketRepository.Update(ctx, basket)
+	if err != nil {
+		return err
+	}
+
+	err = a.domainPublisher.Publish(ctx, basket.GetEvents()...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
