@@ -3,6 +3,7 @@ module eda-in-golang
 go 1.21.1
 
 require (
+	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/golang/glog v1.1.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0 // indirect
