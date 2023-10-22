@@ -12,6 +12,6 @@ message Item {
     string product_id = 2;
     string store_name = 3;
     string product_name = 4;
-    string product_price = 5;
+    double product_price = 5;
     int32 quantity = 6;
 }
