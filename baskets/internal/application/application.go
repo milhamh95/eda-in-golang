@@ -73,3 +73,22 @@ func New(
 		domainPublisher:   domainPublisher,
 	}
 }
+
+func (a Application) StartBasket(ctx context.Context, start StartBasket) error {
+	basket, err := domain.StartBasket(start.ID, start.CustomerID)
+	if err != nil {
+		return err
+	}
+
+	err = a.basketRepository.Save(ctx, basket)
+	if err != nil {
+		return err
+	}
+
+	err = a.domainPublisher.Publish(ctx, basket.GetEvents()...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
