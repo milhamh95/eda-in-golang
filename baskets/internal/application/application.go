@@ -204,3 +204,7 @@ func (a Application) RemoveItem(ctx context.Context, remove RemoveItem) error {
 
 	return nil
 }
+
+func (a Application) GetBasket(ctx context.Context, get GetBasket) (*domain.Basket, error) {
+	return a.basketRepository.Find(ctx, get.ID)
+}
