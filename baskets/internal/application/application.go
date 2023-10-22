@@ -175,3 +175,32 @@ func (a Application) AddItem(ctx context.Context, add AddItem) error {
 
 	return nil
 }
+
+func (a Application) RemoveItem(ctx context.Context, remove RemoveItem) error {
+	product, err := a.productRepository.Find(ctx, remove.ProductID)
+	if err != nil {
+		return err
+	}
+
+	basket, err := a.basketRepository.Find(ctx, remove.ID)
+	if err != nil {
+		return err
+	}
+
+	err = basket.RemoveItem(product, remove.Quantity)
+	if err != nil {
+		return err
+	}
+
+	err = a.basketRepository.Update(ctx, basket)
+	if err != nil {
+		return err
+	}
+
+	err = a.domainPublisher.Publish(ctx, basket.GetEvents()...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
